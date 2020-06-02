@@ -43,7 +43,7 @@ func (app *Application) AddBook(barcode string) {
 		glib.TimeoutAdd(2000, app.dlgExpiryDate.Hide)
 	}
 
-	it := app.scannedListStore.Append()
+	it := app.scannedListStore.Prepend()
 	err := app.scannedListStore.Set(it,
 		[]int{0, 1, 2, 3, 4},
 		[]interface{}{barcode, bookEntry[ColumnTitle], bookEntry[ColumnShelf], bookEntry[ColumnPlacement1], bookEntry[ColumnDate]})
