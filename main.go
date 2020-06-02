@@ -123,6 +123,14 @@ func createColumn(title string, id int, toggle bool) *gtk.TreeViewColumn {
 	return column
 }
 
+func (app *Application) showError(fmt string, args ...interface{}) {
+	dlg := gtk.MessageDialogNew(app.mainWindow, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, fmt, args...)
+	if dlg.Run() == gtk.RESPONSE_OK {
+		dlg.Close()
+		dlg.Destroy()
+	}
+}
+
 func (app *Application) menuOpen() {
 	fileOpen, err := gtk.FileChooserNativeDialogNew("Välj fil",
 		app.mainWindow,

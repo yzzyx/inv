@@ -19,7 +19,7 @@ func (app *Application) LoadCSV(filename string) {
 	var err error
 	app.filehandle, err = os.OpenFile(filename, os.O_RDWR, 0)
 	if err != nil {
-		//gtk.MessageDialogNew(app.mainWindow, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "Could not open file: %s", err.Error())
+		app.showError("Could not open file: %s", err.Error())
 		log.Printf("Could not open file: %s", err.Error())
 		return
 	}
@@ -37,7 +37,7 @@ func (app *Application) LoadCSV(filename string) {
 		}
 
 		if err != nil {
-			//gtk.MessageDialogNew(app.mainWindow, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "Could not read list: %s", err.Error())
+			app.showError("Could not read list: %s", err.Error())
 			log.Printf("Could not read list: %s", err.Error())
 			return
 		}
@@ -102,6 +102,7 @@ func (app *Application) Save() {
 
 	err = app.writeCSV(app.filehandle, true)
 	if err != nil {
+		app.showError("Could not save information: %s", err)
 		log.Printf("Could not write to file: %s", err.Error())
 	}
 }
