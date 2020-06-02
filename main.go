@@ -47,6 +47,7 @@ var csvHeader = []string{
 	"Omlok.dat.",
 	"Förf. datum",
 	"Publ. nr.",
+	"Extern anm.",
 	"Anmärkning",
 	"Trans.dat.",
 	"Id",
