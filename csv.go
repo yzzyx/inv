@@ -3,14 +3,12 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
+	"github.com/spkg/bom"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"time"
-
-	"golang.org/x/text/encoding/charmap"
-	"golang.org/x/text/transform"
 )
 
 func (app *Application) LoadCSV(filename string) {
@@ -23,8 +21,8 @@ func (app *Application) LoadCSV(filename string) {
 	}
 	defer f.Close()
 
-	enc := charmap.ISO8859_1
-	r := transform.NewReader(f, enc.NewDecoder())
+	// Original file is in UTF-8 with BOM?!
+	r := bom.NewReader(f)
 	csvReader := csv.NewReader(r)
 	csvReader.Comma = ';'
 
@@ -56,9 +54,9 @@ func (app *Application) LoadCSV(filename string) {
 
 func (app *Application) writeCSV(f *os.File, includeAll bool) error {
 
-	enc := charmap.ISO8859_1
-	w := transform.NewWriter(f, enc.NewEncoder())
-	csvWriter := csv.NewWriter(w)
+	// Add a stupid UTF-8 BOM, seems like Excel wants it that way
+	f.WriteString("\xef\xbb\xbf")
+	csvWriter := csv.NewWriter(f)
 	csvWriter.Comma = ';'
 
 	err := csvWriter.Write(csvHeader)
