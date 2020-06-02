@@ -46,7 +46,7 @@ func (app *Application) AddBook(barcode string) {
 	it := app.scannedListStore.Append()
 	err := app.scannedListStore.Set(it,
 		[]int{0, 1, 2, 3, 4},
-		[]interface{}{barcode, bookEntry[ColumnTitle], bookEntry[ColumnShelf], bookEntry[ColumnPlacement], bookEntry[ColumnDate]})
+		[]interface{}{barcode, bookEntry[ColumnTitle], bookEntry[ColumnShelf], bookEntry[ColumnPlacement1], bookEntry[ColumnDate]})
 	if err != nil {
 		log.Println("err: ", err)
 	}

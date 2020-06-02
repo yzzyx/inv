@@ -28,20 +28,71 @@ type Application struct {
 }
 
 var csvHeader = []string{
+	"Nr",
 	"Huvuduppslag",
 	"Etikettnr.",
-	"Hylla",
+	"Lån",
+	"Avdelning",
 	"Placering",
+	"Cirk. kat.",
+	"Hylla",
+	"Annan lånetid",
+	"Giltig t.o.m",
+	"Avdelning",
+	"Placering",
+	"Cirk. kat.",
+	"Hylla",
+	"Status",
+	"Lok.dat.",
+	"Omlok.dat.",
 	"Förf. datum",
+	"Publ. nr.",
+	"Anmärkning",
+	"Trans.dat.",
+	"Id",
+	"Namn",
+	"Kategori",
+	"Grupp",
+	"Enhet/Skola",
+	"Klass",
+	"Extra 1",
+	"Personnummer",
+	"Adress",
 	"Skannad",
 }
 
 const (
-	ColumnTitle = iota
+	ColumnNumber = iota
+	ColumnTitle
 	ColumnBarcode
+	ColumnLoan
+	ColumnDept1
+	ColumnPlacement1
+	ColumnCirkCat1
+	ColumnShelf1
+	ColumnOtherLoanTime
+	ColumnValidUntil
+	ColumnDept2
+	ColumnPlacement2
+	ColumnCirkCat2
 	ColumnShelf
-	ColumnPlacement
+	ColumnStatus
+	ColumnLocDate
+	ColumnReLocDate
 	ColumnDate
+	ColumnPublNum
+	ColumnExternComment
+	ColumnComment
+	ColumnTransDate
+	ColumnId
+	ColumnName
+	ColumnCategory
+	ColumnGroup
+	ColumnSchool
+	ColumnClass
+	ColumnExtra1
+	ColumnSSN
+	ColumnAddress
 	ColumnFound
 )
 
