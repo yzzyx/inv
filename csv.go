@@ -3,12 +3,13 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
-	"github.com/spkg/bom"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"time"
+
+	"github.com/spkg/bom"
 )
 
 func (app *Application) LoadCSV(filename string) {
@@ -52,6 +53,19 @@ func (app *Application) LoadCSV(filename string) {
 	app.filename = filename
 	app.bookList = bookList[1:] // Skip header
 
+	app.scannedListStore.Clear()
+	for _, bookEntry := range app.bookList {
+		if bookEntry[ColumnFound] != "ja" {
+			continue
+		}
+
+		it := app.scannedListStore.Append()
+		err := app.scannedListStore.Set(it, []int{0, 1, 2, 3, 4},
+			[]interface{}{bookEntry[ColumnBarcode], bookEntry[ColumnTitle], bookEntry[ColumnShelf], bookEntry[ColumnPlacement1], bookEntry[ColumnDate]})
+		if err != nil {
+			log.Println("err: ", err)
+		}
+	}
 	app.UpdateInfo()
 }
 
