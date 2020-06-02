@@ -5,16 +5,9 @@ if [ ! -d "gtk-win64-runtime" ]; then
     exit 1
 fi
 
-#export PKG_CONFIG_PATH=/usr/x86_64-w64-mingw32/lib/pkgconfig
-export PKG_CONFIG_ALLOW_CROSS=1
-export PKG_CONFIG_PATH=/mingw64/lib/pkgconfig
-export CGO_ENABLED=1
-export CC=x86_64-w64-mingw32-gcc
-export GOOS=windows
-export GOARCH=amd64
-go install github.com/gotk3/gotk3/gtk
+(cd docker/w64build && docker build . -t w64-go-cache)
+docker run -v $(pwd):/build -v w64-go-cache:/root/go w64-gtk-build
 
-go build -ldflags -H=windowsgui
 mkdir -p windows
 mkdir -p windows/share/glib-2.0/schemas
 mkdir -p windows/share/icons
