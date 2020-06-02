@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"sync"
 
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/glib"
@@ -24,7 +25,9 @@ type Application struct {
 	bookList         [][]string
 	scannedListStore *gtk.ListStore
 
-	filename string
+	filename   string
+	filehandle *os.File
+	fileMutex  sync.Mutex
 }
 
 var csvHeader = []string{

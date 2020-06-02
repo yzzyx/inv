@@ -12,17 +12,20 @@ import (
 )
 
 func (app *Application) LoadCSV(filename string) {
+	if app.filehandle != nil {
+		app.filehandle.Close()
+	}
 
-	f, err := os.Open(filename)
+	var err error
+	app.filehandle, err = os.OpenFile(filename, os.O_RDWR, 0)
 	if err != nil {
 		//gtk.MessageDialogNew(app.mainWindow, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, "Could not open file: %s", err.Error())
 		log.Printf("Could not open file: %s", err.Error())
 		return
 	}
-	defer f.Close()
 
 	// Original file is in UTF-8 with BOM?!
-	r := bom.NewReader(f)
+	r := bom.NewReader(app.filehandle)
 	csvReader := csv.NewReader(r)
 	csvReader.Comma = ';'
 
@@ -53,13 +56,22 @@ func (app *Application) LoadCSV(filename string) {
 }
 
 func (app *Application) writeCSV(f *os.File, includeAll bool) error {
+	_, err := app.filehandle.Seek(0, io.SeekStart)
+	if err != nil {
+		return err
+	}
+
+	err = app.filehandle.Truncate(0)
+	if err != nil {
+		return err
+	}
 
 	// Add a stupid UTF-8 BOM, seems like Excel wants it that way
 	f.WriteString("\xef\xbb\xbf")
 	csvWriter := csv.NewWriter(f)
 	csvWriter.Comma = ';'
 
-	err := csvWriter.Write(csvHeader)
+	err = csvWriter.Write(csvHeader)
 	if err != nil {
 		return err
 	}
@@ -81,14 +93,14 @@ func (app *Application) writeCSV(f *os.File, includeAll bool) error {
 }
 
 func (app *Application) Save() {
-	f, err := os.OpenFile(app.filename, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
-	if err != nil {
-		log.Printf("Could not open file: %s", err.Error())
+	var err error
+	if app.filehandle == nil {
 		return
 	}
-	defer f.Close()
+	app.fileMutex.Lock()
+	defer app.fileMutex.Unlock()
 
-	err = app.writeCSV(f, true)
+	err = app.writeCSV(app.filehandle, true)
 	if err != nil {
 		log.Printf("Could not write to file: %s", err.Error())
 	}
