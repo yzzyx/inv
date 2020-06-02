@@ -5,7 +5,7 @@ if [ ! -d "gtk-win64-runtime" ]; then
     exit 1
 fi
 
-(cd docker/w64build && docker build . -t w64-go-cache)
+#(cd docker/w64build && docker build . -t w64-go-cache)
 docker run -v $(pwd):/build -v w64-go-cache:/root/go w64-gtk-build
 
 mkdir -p windows
