@@ -13,6 +13,12 @@ import (
 
 const appID = "com.yzzyx.inv"
 
+const cssData = `
+.bg-green { background-color: #4E9A06; }
+.bg-blue { background-color: #729FCF; }
+.bg-red { background-color: #CC0000; }
+`
+
 type Application struct {
 	application      *gtk.Application
 	builder          *gtk.Builder
@@ -280,9 +286,32 @@ func (app *Application) builderFunc() {
 	}
 	app.builder.ConnectSignals(signals)
 
+	css, err := gtk.CssProviderNew()
+	if err != nil {
+		log.Fatal("Cannot create css provider:", err)
+	}
+
+	err = css.LoadFromData(cssData)
+	if err != nil {
+		log.Fatal("Cannot load css styles:", err)
+	}
+
+	app.addCSS(app.dlgAlreadySeen, css)
+	app.addCSS(app.dlgExpiryDate, css)
+	app.addCSS(app.dlgNotFound, css)
+
 	wnd.AddEvents(int(gdk.KEY_PRESS_MASK))
 	wnd.ShowAll()
 	app.application.AddWindow(wnd)
+}
+
+func (app *Application) addCSS(w *gtk.Window, css *gtk.CssProvider) {
+	style, err := w.GetStyleContext()
+	if err != nil {
+		log.Print("Cannot get style context:", err)
+		return
+	}
+	style.AddProvider(css, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 }
 
 func (app *Application) run() error {
