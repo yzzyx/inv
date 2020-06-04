@@ -29,6 +29,7 @@
     <property name="can_focus">False</property>
     <property name="default_width">500</property>
     <property name="default_height">250</property>
+    <property name="icon_name">accessories-dictionary</property>
     <signal name="key-press-event" handler="dlgMain_key_press_event_cb" swapped="no"/>
     <child type="titlebar">
       <placeholder/>
