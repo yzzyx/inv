@@ -13,5 +13,10 @@ func (app *Application) UpdateInfo() {
 		}
 	}
 
-	app.lblInfo.SetText(fmt.Sprintf("%s: %d exemplar, %d skannade", filepath.Base(app.filename), len(app.bookList), seen))
+	var percent float32
+	if len(app.bookList) > 0 {
+		percent = (float32(seen) / float32(len(app.bookList))) * 100
+	}
+
+	app.lblInfo.SetText(fmt.Sprintf("%s: %d exemplar, %d skannade (%.2f %%)", filepath.Base(app.filename), len(app.bookList), seen, percent))
 }
