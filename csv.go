@@ -29,6 +29,7 @@ func (app *Application) LoadCSV(filename string) {
 	r := bom.NewReader(app.filehandle)
 	csvReader := csv.NewReader(r)
 	csvReader.Comma = ';'
+	csvReader.LazyQuotes = true
 
 	bookList := [][]string{}
 	for {
