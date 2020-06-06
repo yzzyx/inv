@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"strings"
 	"sync"
 
 	"github.com/gotk3/gotk3/gdk"
@@ -30,6 +31,7 @@ type Application struct {
 	lblInfo          *gtk.Label
 	bookList         [][]string
 	scannedListStore *gtk.ListStore
+	scannedListView  *gtk.TreeView
 
 	filename   string
 	filehandle *os.File
@@ -198,6 +200,45 @@ func (app *Application) dlgNotFoundKeyPress(widget *gtk.Window, ev *gdk.Event) {
 	}
 }
 
+func (app *Application) scannedBooksKeyPress(tv *gtk.TreeView, ev *gdk.Event) {
+	keyEvent := &gdk.EventKey{ev}
+
+	if keyEvent.KeyVal() != gdk.KEY_c || keyEvent.State()&gdk.GDK_CONTROL_MASK == 0 {
+		return
+	}
+
+	clipboard, err := gtk.ClipboardGet(gdk.SELECTION_CLIPBOARD)
+	if err != nil {
+		log.Printf("Cannot get clipboard: %s", err)
+		return
+	}
+
+	selection, err := app.scannedListView.GetSelection()
+	if err != nil {
+		log.Printf("Cannot get selection: %s", err)
+		return
+	}
+
+	rows := selection.GetSelectedRows(app.scannedListStore)
+	items := make([]string, 0, rows.Length())
+
+	columns := app.scannedListStore.GetNColumns()
+	for l := rows; l != nil; l = l.Next() {
+		path := l.Data().(*gtk.TreePath)
+		iter, _ := app.scannedListStore.GetIter(path)
+
+		values := make([]string, 0, columns)
+		for i := 0; i < columns; i++ {
+			value, _ := app.scannedListStore.GetValue(iter, i)
+			str, _ := value.GetString()
+			values = append(values, str)
+		}
+		// Join columns with tabs, so that they can be copied to excel
+		items = append(items, strings.Join(values, "\t"))
+	}
+	clipboard.SetText(strings.Join(items, "\n"))
+}
+
 func (app *Application) btnShowClicked(widget *gtk.Button) {
 	if app.filename == "" {
 		return
@@ -269,6 +310,7 @@ func (app *Application) builderFunc() {
 	tv.AppendColumn(createColumn("Hylla", 2, false))
 	tv.AppendColumn(createColumn("Placering", 3, false))
 	tv.AppendColumn(createColumn("Förfallodatum", 4, false))
+	app.scannedListView = tv
 
 	selection, err := tv.GetSelection()
 	if err != nil {
@@ -283,12 +325,13 @@ func (app *Application) builderFunc() {
 	tv.SetModel(app.scannedListStore)
 
 	var signals = map[string]interface{}{
-		"menuOpen_activate_cb":              app.menuOpen,
-		"menuQuit_activate_cb":              app.menuQuit,
-		"inputBox_key_press_event_cb":       app.keyPress,
-		"dlgNotFound_button_press_event_cb": app.dlgNotFoundBtnPress,
-		"dlgNotFound_key_press_event_cb":    app.dlgNotFoundKeyPress,
-		"btnShow_clicked_cb":                app.btnShowClicked,
+		"menuOpen_activate_cb":                    app.menuOpen,
+		"menuQuit_activate_cb":                    app.menuQuit,
+		"inputBox_key_press_event_cb":             app.keyPress,
+		"dlgNotFound_button_press_event_cb":       app.dlgNotFoundBtnPress,
+		"dlgNotFound_key_press_event_cb":          app.dlgNotFoundKeyPress,
+		"scannedBooksTreeView_key_press_event_cb": app.scannedBooksKeyPress,
+		"btnShow_clicked_cb":                      app.btnShowClicked,
 	}
 	app.builder.ConnectSignals(signals)
 

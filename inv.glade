@@ -121,6 +121,7 @@
                   <object class="GtkTreeView" id="scannedBooksTreeView">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <signal name="key-press-event" handler="scannedBooksTreeView_key_press_event_cb" swapped="no"/>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection">
                         <property name="mode">none</property>
