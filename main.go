@@ -203,10 +203,18 @@ func (app *Application) dlgNotFoundKeyPress(widget *gtk.Window, ev *gdk.Event) {
 func (app *Application) scannedBooksKeyPress(tv *gtk.TreeView, ev *gdk.Event) {
 	keyEvent := &gdk.EventKey{ev}
 
-	if keyEvent.KeyVal() != gdk.KEY_c || keyEvent.State()&gdk.GDK_CONTROL_MASK == 0 {
-		return
+	// ctrl+c - copy selected
+	if keyEvent.KeyVal() == gdk.KEY_c && keyEvent.State()&gdk.GDK_CONTROL_MASK > 0 {
+		app.scannedBooksCopy()
 	}
 
+	// ctrl+a - select all
+	if keyEvent.KeyVal() == gdk.KEY_a && keyEvent.State()&gdk.GDK_CONTROL_MASK > 0 {
+		app.scannedBooksSelectAll()
+	}
+}
+
+func (app *Application) scannedBooksCopy() {
 	clipboard, err := gtk.ClipboardGet(gdk.SELECTION_CLIPBOARD)
 	if err != nil {
 		log.Printf("Cannot get clipboard: %s", err)
@@ -237,6 +245,15 @@ func (app *Application) scannedBooksKeyPress(tv *gtk.TreeView, ev *gdk.Event) {
 		items = append(items, strings.Join(values, "\t"))
 	}
 	clipboard.SetText(strings.Join(items, "\n"))
+}
+
+func (app *Application) scannedBooksSelectAll() {
+	selection, err := app.scannedListView.GetSelection()
+	if err != nil {
+		log.Printf("Cannot get selection: %s", err)
+		return
+	}
+	selection.SelectAll()
 }
 
 func (app *Application) btnShowClicked(widget *gtk.Button) {
