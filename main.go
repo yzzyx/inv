@@ -225,43 +225,43 @@ func (app *Application) builderFunc() {
 
 	obj, err := app.builder.GetObject("dlgMain")
 	if err != nil {
-		log.Fatalln("Could not get main dialog")
+		log.Fatalln("Could not get main dialog:", err)
 	}
 	wnd := obj.(*gtk.Window)
 
 	obj, err = app.builder.GetObject("dlgNotFound")
 	if err != nil {
-		log.Fatalln("Could not get not-found dialog")
+		log.Fatalln("Could not get not-found dialog:", err)
 	}
 	app.dlgNotFound = obj.(*gtk.Window)
 
 	obj, err = app.builder.GetObject("lblNotFound")
 	if err != nil {
-		log.Fatalln("Could not get notFound label")
+		log.Fatalln("Could not get notFound label:", err)
 	}
 	app.lblNotFound = obj.(*gtk.Label)
 
 	obj, err = app.builder.GetObject("dlgExpiryDate")
 	if err != nil {
-		log.Fatalln("Could not get expiry dialog")
+		log.Fatalln("Could not get expiry dialog:", err)
 	}
 	app.dlgExpiryDate = obj.(*gtk.Window)
 
 	obj, err = app.builder.GetObject("dlgAlreadySeen")
 	if err != nil {
-		log.Fatalln("Could not get already seen dialog")
+		log.Fatalln("Could not get already seen dialog:", err)
 	}
 	app.dlgAlreadySeen = obj.(*gtk.Window)
 
 	obj, err = app.builder.GetObject("lblInfo")
 	if err != nil {
-		log.Fatalln("Could not get info label")
+		log.Fatalln("Could not get info label:", err)
 	}
 	app.lblInfo = obj.(*gtk.Label)
 
 	obj, err = app.builder.GetObject("scannedBooksTreeView")
 	if err != nil {
-		log.Fatalln("Could not get tree view")
+		log.Fatalln("Could not get tree view:", err)
 	}
 	tv := obj.(*gtk.TreeView)
 	tv.AppendColumn(createColumn("Etikett", 0, false))
