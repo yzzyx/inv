@@ -270,6 +270,12 @@ func (app *Application) builderFunc() {
 	tv.AppendColumn(createColumn("Placering", 3, false))
 	tv.AppendColumn(createColumn("Förfallodatum", 4, false))
 
+	selection, err := tv.GetSelection()
+	if err != nil {
+		log.Fatalln("Could not get tree view selection:", err)
+	}
+	selection.SetMode(gtk.SELECTION_MULTIPLE)
+
 	app.scannedListStore, err = gtk.ListStoreNew(glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_STRING)
 	if err != nil {
 		log.Fatal("Unable to create list store:", err)
