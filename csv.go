@@ -51,6 +51,12 @@ func (app *Application) LoadCSV(filename string) {
 		bookList = append(bookList, record)
 	}
 
+	if len(bookList) == 0 {
+		app.showError("Could not read list: file contains no rows!")
+		log.Printf("Could not read list: file contains no rows!")
+		return
+	}
+
 	app.filename = filename
 	app.bookList = bookList[1:] // Skip header
 
