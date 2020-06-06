@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/spkg/bom"
@@ -54,6 +55,9 @@ func (app *Application) LoadCSV(filename string) {
 	if len(bookList) == 0 {
 		app.showError("Could not read list: file contains no rows!")
 		log.Printf("Could not read list: file contains no rows!")
+
+		app.filehandle.Close()
+		app.filehandle = nil
 		return
 	}
 
@@ -121,10 +125,34 @@ func (app *Application) Save() {
 	app.fileMutex.Lock()
 	defer app.fileMutex.Unlock()
 
-	err = app.writeCSV(app.filehandle, true)
+	// Create a temporary file that will replace the original file.
+	// This is done to minimize the time that we have a partially written file
+	tmpFile, err := ioutil.TempFile(filepath.Dir(app.filename), filepath.Base(app.filename))
+	if err != nil {
+		app.showError("Cannot create temporary file: %s", err)
+		log.Printf("Cannot create temporary file: %s", err)
+		return
+	}
+
+	err = app.writeCSV(tmpFile, true)
 	if err != nil {
 		app.showError("Could not save information: %s", err)
 		log.Printf("Could not write to file: %s", err.Error())
+		return
+	}
+
+	app.filehandle.Close()
+
+	err = os.Rename(tmpFile.Name(), app.filename)
+	if err != nil {
+		app.showError("Cannot replace CSV file: %s", err)
+		log.Printf("Cannot replace CSV file: %s", err.Error())
+	}
+
+	app.filehandle, err = os.OpenFile(app.filename, os.O_RDWR, 0)
+	if err != nil {
+		app.showError("Could not open file: %s", err.Error())
+		log.Printf("Could not open file: %s", err.Error())
 	}
 }
 
